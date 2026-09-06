@@ -830,7 +830,7 @@ def test_server_loads_compact_mtp_proposal_head(monkeypatch):
 
     monkeypatch.setenv("MLX_VLM_DRAFT_MODEL", "assistant")
     monkeypatch.setenv("MLX_VLM_DRAFT_KIND", "mtp")
-    monkeypatch.setenv("MLX_VLM_DRAFT_COMPACT_HEAD", "/proposal/compact")
+    gen.draft_compact_head_path = "/proposal/compact"
     monkeypatch.setattr(
         server_generation,
         "load_model_resources",
@@ -870,7 +870,7 @@ def test_server_rejects_compact_head_without_drafter(monkeypatch):
 
     monkeypatch.delenv("MLX_VLM_DRAFT_MODEL", raising=False)
     monkeypatch.delenv("MLX_VLM_DRAFT_KIND", raising=False)
-    monkeypatch.setenv("MLX_VLM_DRAFT_COMPACT_HEAD", "/proposal/compact")
+    gen.draft_compact_head_path = "/proposal/compact"
     monkeypatch.setattr(
         server_generation,
         "load_model_resources",
@@ -890,7 +890,7 @@ def test_server_rejects_compact_head_for_non_mtp_drafter(monkeypatch):
 
     monkeypatch.setenv("MLX_VLM_DRAFT_MODEL", "assistant")
     monkeypatch.setenv("MLX_VLM_DRAFT_KIND", "eagle3")
-    monkeypatch.setenv("MLX_VLM_DRAFT_COMPACT_HEAD", "/proposal/compact")
+    gen.draft_compact_head_path = "/proposal/compact"
     monkeypatch.setattr(
         server_generation,
         "load_model_resources",

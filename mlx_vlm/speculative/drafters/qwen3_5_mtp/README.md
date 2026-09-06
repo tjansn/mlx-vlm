@@ -106,20 +106,23 @@ Rebuild them with this tool to enable the full checks.
 
 ### Performance measured on Qwen3.8 27B
 
-A four-prompt, 1,024-token greedy screen on an M5 Max measured:
+A controlled compact-off/compact-on run on an M5 Max used four fixed prompts,
+two repeats, opposite arm orders, a 32-token warm-up per policy, and 512 emitted
+tokens per case. The target and MTP drafter remained loaded while only the
+proposal head changed:
 
 | Proposal projection | Pooled throughput | Change |
 | --- | ---: | ---: |
-| Full 8-bit head, 248,320 rows | 27.14 tok/s | baseline |
-| Compact 8-bit head, 98,336 rows | 28.12 tok/s | +3.58% |
-| Compact 4-bit head, 98,336 rows | 29.27 tok/s | +7.82% |
+| Full 8-bit head, 248,320 rows | 32.87 tok/s | baseline |
+| Compact 4-bit head, 98,336 rows | 34.98 tok/s | +6.42% |
 
-The compact 4-bit path was faster on all four prompts, added about 0.26 GiB of
-peak MLX memory, and emitted the same 1,024 token IDs as the serial reference.
-This was a directional screen on predecessor code, with one observation per
-prompt and a production model resident. It is not a controlled result for this
-PR head. A current-head compact-off/compact-on result should be reported before
-using these percentages as the final performance claim.
+The median per-case gain was 5.82%. The compact path was faster in all eight
+cases, with a 4.94% worst-case gain. All 4,096 emitted IDs per arm and finish
+semantics matched a serial reference. Draft acceptance changed from 52.54% to
+51.62%, while measured peak MLX memory was unchanged at 30.17 GiB. All 32
+process and 32 thermal gates passed at or below 44 C, and swap did not grow.
+The run used commit `1eee9bad58a7e18a66ff1b44d7a97bccd370fac4`; subsequent
+changes in this branch only correct tests and document these results.
 
 The proposal-only compact-vocabulary approach and the 98,336-row physical shape
 were informed by [MLX.fast challenge PR 59](https://github.com/Layr-Labs/qwen-3.8-mtp-challenge/pull/59).

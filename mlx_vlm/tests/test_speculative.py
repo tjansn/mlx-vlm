@@ -3568,9 +3568,11 @@ def test_qwen_compact_proposal_falls_back_to_full_head_for_stochastic_drafting()
             compact_calls.append(hidden) or mx.zeros(hidden.shape[:-1])
         )
     )
+    lm_head = lambda hidden: hidden + mx.array([[[0.0, 1.0]]])
     draft = SimpleNamespace(
         _compact_proposal_head=compact,
-        _lm_head_fn=lambda hidden: hidden + mx.array([[[0.0, 1.0]]]),
+        _lm_head_fn=lm_head,
+        _greedy_token=lambda hidden: mx.argmax(lm_head(hidden), axis=-1),
     )
 
     def sampler(logits):
